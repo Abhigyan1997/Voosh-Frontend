@@ -124,3 +124,13 @@
 .task-buttons .delete-button {
     background-color: #ff4d4d;
 }
+
+
+.dashboard-container .MuiIconButton-root:hover {
+    color: yellow; /* Default hover color for login and signup */
+  }
+  
+  .dashboard-container .MuiIconButton-root.logout:hover {
+    color: red; /* Hover color specifically for logout button */
+  }
+  

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './login.css';
+import { Container, TextField, Button, Typography, Alert, Link, AppBar, Toolbar, Card, CardContent, CardActions, InputAdornment, IconButton } from '@mui/material';
+import { Email, Lock, Visibility, VisibilityOff } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +12,9 @@ const Login = () => {
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,18 +25,16 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:5000/api/users/login', {
+      const response = await axios.post('https://13.233.158.103/api/users/login', {
         email: formData.email,
         password: formData.password,
       });
 
       if (response.data.token) {
-        // Handle successful login (e.g., store token, redirect user)
         localStorage.setItem('token', response.data.token);
         setSuccess('Login successful!');
         setError('');
-        // Redirect or navigate to another page
-        window.location.href = '/dashboard'; // Example redirection
+        navigate('/dashboard'); // Example redirection
       }
     } catch (error) {
       setError(error.response?.data?.error || 'An error occurred');
@@ -39,44 +42,107 @@ const Login = () => {
     }
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href = 'http://13.233.158.103/auth/google';
+  };
+
+  const handleClickShowPassword = () => setShowPassword(!showPassword);
+
   return (
-    <div className="login-container">
-      <header className="login-header">
-        <div className="header-title">TODO</div>
-        <nav className="login-nav">
-          <button className="nav-button active">Login</button>
-          <button className="nav-button">Signup</button>
-        </nav>
-      </header>
-      <div className="login-form-container">
-        <h2>Login</h2>
-        <form className="login-form" onSubmit={handleSubmit}>
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-          <button type="submit" className="login-button">Login</button>
-        </form>
-        {error && <div className="error-message">{error}</div>}
-        {success && <div className="success-message">{success}</div>}
-        <div className="login-footer">
-          <p>Don't have an account? <a href="signup">Signup</a></p>
-          <button className="google-login">Login with Google</button>
-        </div>
-      </div>
-    </div>
+    <Container
+      maxWidth="sm"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+      }}
+    >
+      <AppBar position="static" color="transparent" elevation={0}>
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: '#fff' }}>
+            TODO
+          </Typography>
+          <Button color="inherit" variant="outlined" sx={{ color: '#fff', borderColor: '#fff' }} onClick={() => navigate('/signup')}>
+            Signup
+          </Button>
+          <Button color="inherit" sx={{ color: '#fff' }} onClick={() => navigate('/login')}>
+            Login
+          </Button>
+        </Toolbar>
+      </AppBar>
+      <Card sx={{ mt: 5, borderRadius: 3, boxShadow: 6 }}>
+        <CardContent>
+          <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ fontWeight: 'bold' }}>
+            Login
+          </Typography>
+          <form onSubmit={handleSubmit}>
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              type="email"
+              required
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Email />
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              type={showPassword ? 'text' : 'password'}
+              required
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Lock />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <CardActions sx={{ mt: 2, justifyContent: 'center' }}>
+              <Button type="submit" variant="contained" color="primary" size="large" sx={{ px: 4, py: 1 }}>
+                Login
+              </Button>
+            </CardActions>
+          </form>
+          {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+          {success && <Alert severity="success" sx={{ mt: 2 }}>{success}</Alert>}
+        </CardContent>
+        <CardContent sx={{ textAlign: 'center' }}>
+          <Typography>
+            Don't have an account? <Link href="/signup">Signup</Link>
+          </Typography>
+          <Button variant="outlined" color="secondary" fullWidth sx={{ mt: 1 }} onClick={handleGoogleLogin}>
+            Login with Google
+          </Button>
+        </CardContent>
+      </Card>
+    </Container>
   );
 };
 

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import './task.css';
 
+// Set the app element for accessibility
+Modal.setAppElement('#root');
+
 const TaskModal = ({ isOpen, onRequestClose, task, onSave }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -14,7 +17,7 @@ const TaskModal = ({ isOpen, onRequestClose, task, onSave }) => {
       setTitle('');
       setDescription('');
     }
-  }, [task]);
+  }, [task, isOpen]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -51,18 +54,13 @@ const TaskModal = ({ isOpen, onRequestClose, task, onSave }) => {
             required
           ></textarea>
         </div>
-        {task && (
-          <div className="form-group">
-            <p><strong>Created At:</strong> {task.createdAt.toLocaleString()}</p>
-          </div>
-        )}
         <button type="submit" className="save-button">
           Save
         </button>
-        <button onClick={onRequestClose} className="close-button">
-          Close
-        </button>
       </form>
+      <button onClick={onRequestClose} className="close-button">
+        Close
+      </button>
     </Modal>
   );
 };
